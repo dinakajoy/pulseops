@@ -32,46 +32,35 @@
 10. Review Incident History
 
 ## High-Level Workflow
-Client experiences issue
-        │
-        ▼
-Client reports issue
-        │
-        ▼
-Support validates report
-        │
-        ▼
-Incident created
-        │
-        ▼
-Engineering Manager triages incident
-        │
-        ▼
-Severity assigned
-        │
-        ▼
-Responders assigned
-        │
-        ▼
-Engineers investigate
-        │
-        ▼
-Incident updates communicated
-        │
-        ▼
-Issue resolved
-        │
-        ▼
-Resolution verified
-        │
-        ▼
-Customer Success notifies affected tenants
-        │
-        ▼
-Incident closed
-        │
-        ▼
-Reporting & analytics
+```
+  Client experiences issue 
+       ↓
+  Client reports issue
+        ↓
+  Support validates report
+        ↓
+  Incident created
+        ↓
+  Engineering Manager triages incident
+        ↓
+  Severity assigned
+        ↓
+  Responders assigned
+        ↓
+  Engineers investigate
+        ↓
+  Incident updates communicated
+        ↓
+  Issue resolved
+        ↓
+  Resolution verified
+        ↓
+  Customer Success notifies affected tenants
+        ↓
+  Incident closed
+        ↓
+  Reporting & analytics
+```
 
 ## Process Ownership
 | Process                 | Primary Owner       |

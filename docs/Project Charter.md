@@ -4,13 +4,7 @@
 Become the central engineering operations platform that enables support, engineering, and management teams to coordinate, resolve, and continuously improve the handling of production incidents across multi-tenant SaaS products.
 
 ## Purpose
-Organizations often manage incidents using scattered tools such as Slack, spreadsheets, emails, and ticketing systems. This results in:
-- poor visibility
-- duplicated work
-- inconsistent communication
-- slow response times
-- missing historical knowledge
-PulseOps provides a centralized operational workspace and a single source of truth for managing production incidents throughout their lifecycle.
+Organizations often manage incidents using scattered tools such as Slack, spreadsheets, emails, and ticketing systems. PulseOps provides a centralized operational workspace and a single source of truth for managing production incidents throughout their lifecycle.
 
 ## Objectives
 The system should enable SaaS organizations to:
@@ -29,14 +23,13 @@ The system should enable SaaS organizations to:
   * Analyze operational metrics
 
 ## Stakeholders
-| Stakeholder         | Responsibility                                 |
+| **Stakeholder**     | **Responsibility**                             |
 | ------------------- | ---------------------------------------------- |
-| Product Owner       | Defines product vision and priorities          |
+| Product Owner/Admin | Defines product vision and priorities          |
 | Engineering Manager | Oversees engineering execution                 |
 | Support Team        | Reports and escalates customer issues          |
 | Engineers           | Investigate and resolve incidents              |
 | Customer Success    | Communicates incident updates to customers     |
-| Executives          | Monitor operational health and business impact |
 
 ## Scope
 This project focuses on the Minimum Viable Product (MVP) required for internal engineering teams to manage production incidents.
@@ -58,11 +51,7 @@ In Scope:
 Out of Scope:
 - AI root cause analysis
 - On-call scheduling
-- PagerDuty replacement
 - Infrastructure monitoring
-- Kubernetes management
-- Log aggregation
-- Distributed tracing
 
 ## Risks
 - Scope creep
@@ -70,7 +59,6 @@ Out of Scope:
 - Delayed external integrations
 - Poor user adoption
 - Performance issues under heavy incident volume
-- Poor adoption if workflows are too complex
 
 ## Assumptions
 - Engineering teams already have an existing SaaS product in production.
@@ -91,7 +79,7 @@ Out of Scope:
   * Web application only
 
 ## Open Questions
-This section captures decisions that need validation before implementation, such as:
+This section captures decisions that need validation before implementation.
 - Should incidents support multiple responders?
 - Should customers be able to define custom severity levels?
 - Will external integrations (Slack, Teams, PagerDuty) be part of the MVP?

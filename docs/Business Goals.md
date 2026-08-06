@@ -15,7 +15,7 @@ Provide engineering organizations with a centralized operational workspace that 
 - Continuously improve operational efficiency through measurable metrics.
 
 ## Success Metrics
-### Business KPIs
+### Business Key Performance Indicators (KPIs)
 | Metric                      | Target               |
 | --------------------------- | -------------------- |
 | Mean Time to Detect (MTTD)  | Decreasing over time |
@@ -29,8 +29,8 @@ Provide engineering organizations with a centralized operational workspace that 
 | ----------------------------- | ----------- |
 | Incident creation time        | < 2 minutes |
 | Incident assignment time      | < 5 minutes |
-| Timeline completeness         | >95%        |
-| Notification delivery success | >99.9%      |
+| Timeline completeness         | > 95%        |
+| Notification delivery success | > 99.9%      |
 
 ## Expected Business Outcomes
 - Faster coordination during production incidents.
