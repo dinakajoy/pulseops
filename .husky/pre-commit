@@ -1,0 +1,46 @@
+echo '-------------------------'
+echo 'Styling, linting, type-checking, testing and building your project before commit'
+echo '-------------------------'
+
+cd backend || exit 1
+
+# Check Prettier standards
+npm run format:check || {
+  echo '❌ Formatting check failed.'
+  echo 'Run `npm run format` inside backend, stage your changes, and try again.'
+  exit 1
+}
+
+# Check ESLint standards
+npm run lint || {
+  echo '❌ ESLint check failed.'
+  echo 'Fix the errors above, stage your changes, and try again.'
+  exit 1
+}
+
+# Check TypeScript
+npm run type:check || {
+  echo '❌ TypeScript check failed.'
+  echo 'Fix the errors above, stage your changes, and try again.'
+  exit 1
+}
+
+# Run tests
+npm test || {
+  echo '❌ Tests failed.'
+  echo 'Fix the failing tests, stage your changes, and try again.'
+  exit 1
+}
+
+# Build
+echo 'Looks good. Trying to build now...'
+
+npm run build || {
+  echo '❌ Build failed.'
+  echo 'View the errors above to see why.'
+  exit 1
+}
+
+echo '-------------------------'
+echo '✅ All checks passed. Committing code...'
+echo '-------------------------'
