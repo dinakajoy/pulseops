@@ -1,0 +1,29 @@
+{
+  "name": "pulseops",
+  "version": "1.0.0",
+  "scripts": {
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "backend/**/*.{ts,tsx}": [
+      "npx --prefix backend eslint --fix",
+      "npx --prefix backend prettier --write"
+    ],
+    "backend/**/*.{json,md,yml,yaml}": [
+      "npx --prefix backend prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.2.0",
+    "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.11",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.10"
+  }
+}
