@@ -7,13 +7,14 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "typecheck": "tsc --noEmit",
+    "type:check": "tsc --noEmit",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "prepare": "husky"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -28,8 +29,13 @@
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.2.0",
     "eslint": "^10.8.1",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
+    "prettier": "^3.9.6",
     "tsx": "^4.23.11",
-    "typescript": "^7.0.2",
-    "typescript-eslint": "^8.67.0"
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.10"
   }
 }
