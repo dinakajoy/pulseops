@@ -1,9 +1,7 @@
-import pg from "pg";
+import { Pool } from "pg";
 
 import { env } from "../config/env";
 import { logger } from "../config/logger";
-
-const { Pool } = pg;
 
 export const pool = new Pool({
   connectionString: env.DATABASE_URL,

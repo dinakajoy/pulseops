@@ -2,6 +2,7 @@ import app from "./app";
 
 import { env } from "./shared/config/env";
 import { logger } from "./shared/config/logger";
+
 import { pool } from "./shared/database/pool";
 
 const server = app.listen(env.PORT, () => {

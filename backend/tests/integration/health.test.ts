@@ -6,7 +6,7 @@ import app from "../../src/app";
 describe("HTTP middleware pipeline", () => {
   describe("request ID", () => {
     it("generates a request ID", async () => {
-      const response = await request(app).get("/health").expect(200);
+      const response = await request(app).get("/api/v1/health").expect(200);
 
       expect(response.headers["x-request-id"]).toBeDefined();
       expect(response.headers["x-request-id"]).toMatch(/^[0-9a-f-]{36}$/);
@@ -14,7 +14,7 @@ describe("HTTP middleware pipeline", () => {
 
     it("preserves an existing request ID", async () => {
       const response = await request(app)
-        .get("/health")
+        .get("/api/v1/health")
         .set("X-Request-ID", "test-request-123")
         .expect(200);
 
@@ -24,7 +24,7 @@ describe("HTTP middleware pipeline", () => {
 
   describe("security headers", () => {
     it("adds security headers", async () => {
-      const response = await request(app).get("/health").expect(200);
+      const response = await request(app).get("/api/v1/health").expect(200);
 
       expect(response.headers["x-content-type-options"]).toBe("nosniff");
 
@@ -32,7 +32,7 @@ describe("HTTP middleware pipeline", () => {
     });
 
     it("does not expose the Express server", async () => {
-      const response = await request(app).get("/health").expect(200);
+      const response = await request(app).get("/api/v1/health").expect(200);
 
       expect(response.headers["x-powered-by"]).toBeUndefined();
     });
@@ -41,7 +41,7 @@ describe("HTTP middleware pipeline", () => {
   describe("CORS", () => {
     it("allows the configured origin", async () => {
       const response = await request(app)
-        .get("/health")
+        .get("/api/v1/health")
         .set("Origin", "http://localhost:3001")
         .expect(200);
 
@@ -68,7 +68,7 @@ describe("HTTP middleware pipeline", () => {
 
   describe("health", () => {
     it("returns a healthy response", async () => {
-      const response = await request(app).get("/health").expect(200);
+      const response = await request(app).get("/api/v1/health").expect(200);
 
       expect(response.body).toEqual({
         status: "ok",
