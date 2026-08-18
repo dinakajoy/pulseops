@@ -1,13 +1,17 @@
-export class OrganizationNotFoundError extends Error {
+import { AppError } from "../../shared/errors/app-error";
+
+export class OrganizationNotFoundError extends AppError {
   constructor(id: string) {
-    super(`Organization '${id}' was not found`);
-    this.name = "OrganizationNotFoundError";
+    super(404, "ORGANIZATION_NOT_FOUND", `Organization '${id}' was not found`);
   }
 }
 
-export class OrganizationSlugAlreadyExistsError extends Error {
+export class OrganizationSlugAlreadyExistsError extends AppError {
   constructor(slug: string) {
-    super(`Organization slug '${slug}' already exists`);
-    this.name = "OrganizationSlugAlreadyExistsError";
+    super(
+      409,
+      "ORGANIZATION_SLUG_ALREADY_EXISTS",
+      `Organization slug "${slug}" already exists`,
+    );
   }
 }

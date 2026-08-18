@@ -18,3 +18,15 @@ pool.on("error", (error) => {
     "Unexpected PostgreSQL pool error",
   );
 });
+
+export async function checkDatabaseConnection(): Promise<void> {
+  const client = await pool.connect();
+
+  try {
+    await client.query("SELECT 1");
+
+    logger.info("PostgreSQL connection established");
+  } finally {
+    client.release();
+  }
+}

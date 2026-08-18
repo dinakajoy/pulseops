@@ -45,6 +45,16 @@ export class OrganizationService {
     return organization;
   }
 
+  async getBySlug(slug: string): Promise<Organization> {
+    const organization = await this.repository.findBySlug(slug);
+
+    if (!organization) {
+      throw new OrganizationNotFoundError(slug);
+    }
+
+    return organization;
+  }
+
   async update(
     id: string,
     input: UpdateOrganizationInput,

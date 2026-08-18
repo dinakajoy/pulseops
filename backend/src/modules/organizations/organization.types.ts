@@ -1,7 +1,4 @@
-export type OrganizationStatus =
-  | "active"
-  | "suspended"
-  | "archived";
+export type OrganizationStatus = "active" | "suspended" | "archived";
 
 export interface Organization {
   id: string;
@@ -23,29 +20,15 @@ export interface UpdateOrganizationInput {
 }
 
 export interface OrganizationRepository {
-  create(
-    input: CreateOrganizationInput
-  ): Promise<Organization>;
+  create(input: CreateOrganizationInput): Promise<Organization>;
 
-  findById(
-    id: string
-  ): Promise<Organization | null>;
+  findById(id: string): Promise<Organization | null>;
 
-  findBySlug(
-    slug: string
-  ): Promise<Organization | null>;
+  findBySlug(slug: string): Promise<Organization | null>;
 
-  update(
-    id: string,
-    input: UpdateOrganizationInput
-  ): Promise<Organization>;
+  update(id: string, input: UpdateOrganizationInput): Promise<Organization>;
 
-  updateStatus(
-    id: string,
-    status: OrganizationStatus
-  ): Promise<Organization>;
+  updateStatus(id: string, status: OrganizationStatus): Promise<Organization>;
 
-  delete(
-    id: string
-  ): Promise<void>;
+  delete(id: string): Promise<void>;
 }

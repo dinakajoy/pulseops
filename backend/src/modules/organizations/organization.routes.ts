@@ -29,6 +29,8 @@ organizationRouter.post(
 
 organizationRouter.get("/organizations/:id", controller.getById);
 
+organizationRouter.get("/organizations/slug/:slug", controller.getBySlug);
+
 organizationRouter.patch(
   "/organizations/:id",
   validateBody(updateOrganizationSchema),

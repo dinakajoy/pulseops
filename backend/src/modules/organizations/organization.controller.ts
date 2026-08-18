@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { OrganizationService } from "./organization.service";
+import { organizationIdSchema } from "./organization.schema";
 
 export class OrganizationController {
   constructor(private readonly service: OrganizationService) {}
@@ -27,8 +28,34 @@ export class OrganizationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organization = await this.service.getById(
-        Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
+      const organizationId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id || "";
+      const result = organizationIdSchema.safeParse(organizationId);
+      if (!result.success) {
+        next(result.error);
+        return;
+      }
+      const organization = await this.service.getById(organizationId);
+
+      res.status(200).json({
+        data: organization,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  getBySlug = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const organization = await this.service.getBySlug(
+        Array.isArray(req.params.slug)
+          ? req.params.slug[0]
+          : req.params.slug || "",
       );
 
       res.status(200).json({

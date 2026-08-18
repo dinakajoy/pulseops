@@ -75,5 +75,15 @@ describe("HTTP middleware pipeline", () => {
         service: "pulseops-api",
       });
     });
+    it("returns a healthy response for database connection", async () => {
+      const response = await request(app)
+        .get("/api/v1/health/ready")
+        .expect(200);
+
+      expect(response.body).toEqual({
+        status: "ready",
+        database: "connected",
+      });
+    });
   });
 });

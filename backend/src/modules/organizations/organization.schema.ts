@@ -37,3 +37,5 @@ export const updateOrganizationSchema = z.object({
 export const updateOrganizationStatusSchema = z.object({
   status: z.enum(["active", "suspended", "archived"]),
 });
+
+export const organizationIdSchema = z.uuid();

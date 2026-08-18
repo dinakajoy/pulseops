@@ -1,16 +1,16 @@
 import type { ErrorRequestHandler } from "express";
-import { ZodError } from "zod";
+import { z, ZodError } from "zod";
 
 import { logger } from "../config/logger";
 import { AppError } from "./app-error";
 
-export const errorHandler: ErrorRequestHandler = (error, req, res) => {
+export const errorHandler: ErrorRequestHandler = (error, req, res, _next) => {
   if (error instanceof ZodError) {
     res.status(400).json({
       error: {
         code: "VALIDATION_ERROR",
         message: "Request validation failed",
-        details: error.flatten(),
+        details: z.treeifyError(error),
         requestId: req.requestId,
       },
     });

@@ -12,11 +12,9 @@
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "NODE_ENV=test vitest run",
+    "test": "NODE_ENV=test npm run db:migrate && NODE_ENV=test vitest run",
     "test:watch": "NODE_ENV=test vitest",
-    "db:migrate": "node-pg-migrate up -f migrate.config.cjs",
-    "db:rollback": "node-pg-migrate down -f migrate.config.cjs",
-    "db:create": "node-pg-migrate create"
+    "db:migrate": "tsx src/shared/database/migrate.ts"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
