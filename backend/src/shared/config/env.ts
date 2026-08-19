@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from "dotenv-safe";
 import { z } from "zod";
 
 dotenv.config({
@@ -62,10 +62,9 @@ const envSchema = z.object({
 const result = envSchema.safeParse(process.env);
 
 if (!result.success) {
-  console.error("Invalid environment configuration:");
-  console.error(result.error.flatten().fieldErrors);
-
-  process.exit(1);
+  // eslint-disable-next-line no-console
+  console.error(z.prettifyError(result.error));
+  throw new Error("Invalid environment configuration");
 }
 
 export const env = result.data;

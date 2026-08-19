@@ -13,7 +13,7 @@ import { notFoundHandler } from "./shared/http/not-found";
 
 import { errorHandler } from "./shared/errors/error-handler";
 
-import { healthRouter } from "./modules/health/health.routes";
+import routes from "./routes";
 
 const app = express();
 
@@ -62,7 +62,7 @@ app.get("/", (_req, res) => {
   });
 });
 
-app.use("/health", healthRouter);
+app.use("/api/v1", routes);
 
 app.use(notFoundHandler);
 
