@@ -1,23 +1,14 @@
-import { beforeAll, afterAll, describe, expect, it } from "vitest";
 import request from "supertest";
+import { describe, expect, it } from "vitest";
 
 import app from "../../src/app";
-import { pool } from "../../src/shared/database/pool";
 
 describe("Organization API", () => {
-  beforeAll(async () => {
-    await pool.query("SELECT 1");
-  });
-
-  afterAll(async () => {
-    await pool.query("TRUNCATE TABLE organizations CASCADE");
-    await pool.end();
-  });
-
   describe("POST /api/v1/organizations", () => {
     it("creates an organization", async () => {
       const response = await request(app).post("/api/v1/organizations").send({
         name: "Acme Corporation",
+        ownerEmail: "acmeadmin@test.com",
       });
       expect(response.status).toBe(201);
       expect(response.body).toMatchObject({
@@ -25,6 +16,7 @@ describe("Organization API", () => {
           name: "Acme Corporation",
           slug: "acme-corporation",
           status: "active",
+          ownerEmail: "acmeadmin@test.com",
         },
       });
       expect(response.body.data.id).toBeDefined();
@@ -42,10 +34,12 @@ describe("Organization API", () => {
     it("rejects duplicate slugs", async () => {
       await request(app).post("/api/v1/organizations").send({
         name: "New Acme Corporation",
+        ownerEmail: "newacmeadmin@test.com",
       });
       const response = await request(app).post("/api/v1/organizations").send({
         name: "Acme Corporation",
         slug: "new-acme-corporation",
+        ownerEmail: "newacmeadmin2@test.com",
       });
       expect(response.status).toBe(409);
       expect(response.body).toMatchObject({
@@ -62,6 +56,7 @@ describe("Organization API", () => {
         .post("/api/v1/organizations")
         .send({
           name: "Get Test Organization",
+          ownerEmail: "gettestadmin@test.com",
         });
       expect(createResponse.status).toBe(201);
       const organizationId = createResponse.body.data.id;
@@ -75,6 +70,7 @@ describe("Organization API", () => {
           name: "Get Test Organization",
           slug: "get-test-organization",
           status: "active",
+          ownerEmail: "gettestadmin@test.com",
         },
       });
     });
@@ -84,6 +80,7 @@ describe("Organization API", () => {
         .post("/api/v1/organizations")
         .send({
           name: "Get Test Org",
+          ownerEmail: "gettestorgadmin@test.com",
         });
       expect(createResponse.status).toBe(201);
       const organizationId = createResponse.body.data.id;
@@ -99,6 +96,7 @@ describe("Organization API", () => {
           name: "Get Test Org",
           slug: organizationSlug,
           status: "active",
+          ownerEmail: "gettestorgadmin@test.com",
         },
       });
     });
@@ -122,6 +120,7 @@ describe("Organization API", () => {
         .post("/api/v1/organizations")
         .send({
           name: "Original Organization",
+          ownerEmail: "originalorgadmin@test.com",
         });
 
       expect(createResponse.status).toBe(201);
@@ -140,6 +139,7 @@ describe("Organization API", () => {
         data: {
           id: organizationId,
           name: "Updated Organization",
+          ownerEmail: "originalorgadmin@test.com",
         },
       });
     });
@@ -151,6 +151,7 @@ describe("Organization API", () => {
         .post("/api/v1/organizations")
         .send({
           name: "Status Test Organization",
+          ownerEmail: "statustestorgadmin@test.com",
         });
 
       expect(createResponse.status).toBe(201);
@@ -169,6 +170,7 @@ describe("Organization API", () => {
         data: {
           id: organizationId,
           status: "suspended",
+          ownerEmail: "statustestorgadmin@test.com",
         },
       });
     });

@@ -17,6 +17,12 @@ export const createOrganizationSchema = z.object({
       "Slug must contain only lowercase letters, numbers and hyphens",
     )
     .optional(),
+
+  ownerEmail: z
+    .string()
+    .trim()
+    .email("Invalid email address")
+    .transform((value: string) => value.toLowerCase()),
 });
 
 export const updateOrganizationSchema = z.object({
@@ -31,6 +37,13 @@ export const updateOrganizationSchema = z.object({
       /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
       "Slug must contain only lowercase letters, numbers and hyphens",
     )
+    .optional(),
+
+  ownerEmail: z
+    .string()
+    .trim()
+    .email("Invalid email address")
+    .transform((value: string) => value.toLowerCase())
     .optional(),
 });
 
