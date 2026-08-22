@@ -3,8 +3,7 @@ CREATE EXTENSION IF NOT EXISTS pgcrypto;
 CREATE TYPE invitation_status AS ENUM (
     'pending',
     'accepted',
-    'revoked',
-    -- 'expired'
+    'revoked'
 );
 
 CREATE TABLE invitations (
@@ -25,8 +24,6 @@ CREATE TABLE invitations (
 
     accepted_at TIMESTAMPTZ,
 
-    -- created_by UUID,
-
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -39,3 +36,9 @@ CREATE TABLE invitations (
     CONSTRAINT invitations_token_hash_unique
         UNIQUE (token_hash)
 );
+
+CREATE INDEX invitations_status_idx
+    ON invitations(status);
+
+CREATE INDEX invitations_created_at_idx
+    ON invitations(created_at);

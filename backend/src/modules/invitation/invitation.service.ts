@@ -30,11 +30,9 @@ export class InvitationService {
   }
 
   async create(input: CreateInvitationInput): Promise<Invitation> {
-    const email = input.email.trim().toLowerCase();
-
-    const existing = await this.repository.findByEmail(
-      email,
+    const existing = await this.repository.findPendingByOrganizationAndEmail(
       input.organizationId,
+      input.email,
     );
 
     if (existing) {
@@ -46,26 +44,25 @@ export class InvitationService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + INVITATION_EXPIRY_DAYS);
 
-    return this.repository.create({
+    // TODO: Send invitation email with the 'token' not 'tokenHash'
+
+    const result = await this.repository.create({
       organizationId: input.organizationId,
-      email,
+      email: input.email,
       roleId: input.roleId,
       tokenHash,
       expiresAt,
     });
 
-    // return {
-    //   ...invitation,
-    //   token,
-    // };
+    return { ...result, token };
   }
 
-  async getAll(organizationId: string): Promise<Invitation[]> {
-    return this.repository.findAll(organizationId);
+  async getAll(): Promise<Invitation[]> {
+    return this.repository.findAll();
   }
 
-  async getById(id: string, organizationId: string): Promise<Invitation> {
-    const invitation = await this.repository.findById(id, organizationId);
+  async getById(id: string): Promise<Invitation> {
+    const invitation = await this.repository.findById(id);
 
     if (!invitation) {
       throw new InvitationNotFoundError();
@@ -74,97 +71,96 @@ export class InvitationService {
     return invitation;
   }
 
-  async getByTokenHash(
-    tokenHash: string,
-    organizationId: string,
-  ): Promise<Invitation> {
-    const invitation = await this.repository.findByTokenHash(
-      tokenHash,
-      organizationId,
-    );
-
+  async update(id: string, input: UpdateInvitationInput): Promise<Invitation> {
+    const invitation = await this.repository.findById(id);
     if (!invitation) {
       throw new InvitationNotFoundError();
     }
 
-    return invitation;
+    if (invitation.status === "accepted") {
+      throw new InvitationAcceptedError();
+    }
+
+    if (invitation.status === "revoked") {
+      throw new InvitationRevokedError();
+    }
+
+    if (new Date() > invitation.expiresAt) {
+      throw new InvitationExpiredError();
+    }
+
+    const updates: UpdateInvitationInput = {};
+
+    if (input.roleId !== undefined) {
+      updates.roleId = input.roleId;
+    }
+
+    if (input.status !== undefined) {
+      updates.status = input.status;
+    }
+
+    return this.repository.update(id, updates);
   }
 
-  async updateById(
-    id: string,
-    organizationId: string,
-    input: UpdateInvitationInput,
-  ): Promise<Invitation> {
-    const invitation = await this.repository.findById(id, organizationId);
-
+  async resend(id: string): Promise<Invitation> {
+    const invitation = await this.repository.findById(id);
     if (!invitation) {
       throw new InvitationNotFoundError();
     }
 
-    if (input.status) {
-      if (invitation.status === "accepted") {
-        throw new InvitationAcceptedError();
-      }
-
-      if (invitation.status === "revoked") {
-        throw new InvitationRevokedError();
-      }
-
-      if (new Date() > invitation.expiresAt) {
-        throw new InvitationExpiredError();
-      }
+    if (invitation.status === "accepted") {
+      throw new InvitationAcceptedError();
     }
 
-    return this.repository.update(id, organizationId, {
-      email: input.email ? input.email.trim().toLowerCase() : invitation.email,
-      roleId: input.roleId,
-      status: input.status,
-    });
-  }
+    if (invitation.status === "revoked") {
+      throw new InvitationRevokedError();
+    }
 
-  async updateByToken(
-    token: string,
-    organizationId: string,
-    input: UpdateInvitationInput,
-  ): Promise<Invitation> {
+    if (invitation.status === "pending" && new Date() < invitation.expiresAt) {
+      throw new InvitationExistsError();
+    }
+
+    const token = randomBytes(32).toString("hex");
     const tokenHash = this.hashToken(token);
-    const invitation = await this.repository.findByTokenHash(
-      tokenHash,
-      organizationId,
-    );
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + INVITATION_EXPIRY_DAYS);
 
-    if (!invitation) {
-      throw new InvitationNotFoundError();
-    }
+    // TODO: Send re-invitation email with the 'token' not 'tokenHash'
 
-    if (input.status) {
-      if (invitation.status === "accepted") {
-        throw new InvitationAcceptedError();
-      }
-
-      if (invitation.status === "revoked") {
-        throw new InvitationRevokedError();
-      }
-
-      if (new Date() > invitation.expiresAt) {
-        throw new InvitationExpiredError();
-      }
-    }
-
-    return this.repository.update(invitation.id, organizationId, {
-      email: input.email ? input.email.trim().toLowerCase() : invitation.email,
-      roleId: input.roleId,
-      status: input.status,
-    });
+    return this.repository.resend(id, { tokenHash, expiresAt });
   }
 
-  async delete(id: string, organizationId: string): Promise<void> {
-    const invitation = await this.repository.findById(id, organizationId);
+  async accept(token: string): Promise<Invitation | null> {
+    const tokenHash = this.hashToken(token);
+
+    const invitation = await this.repository.findByTokenHash(tokenHash);
 
     if (!invitation) {
       throw new InvitationNotFoundError();
     }
 
-    await this.repository.delete(id, organizationId);
+    if (invitation.status === "accepted") {
+      throw new InvitationAcceptedError();
+    }
+
+    if (invitation.status === "revoked") {
+      throw new InvitationRevokedError();
+    }
+
+    if (new Date() > invitation.expiresAt) {
+      throw new InvitationExpiredError();
+    }
+
+    return this.repository.accept(invitation.id);
+  }
+
+  async delete(id: string): Promise<void> {
+    const invitation = await this.repository.findById(id);
+
+    if (!invitation) {
+      throw new InvitationNotFoundError();
+    }
+
+    await this.repository.delete(id);
   }
 }

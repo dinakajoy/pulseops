@@ -18,13 +18,11 @@ export class OrganizationService {
 
   async create(input: CreateOrganizationInput): Promise<Organization> {
     const slug = input.slug ? input.slug : generateSlug(input.name);
-
     if (!slug) {
       throw new Error("Unable to generate organization slug");
     }
 
     const existing = await this.repository.findBySlug(slug);
-
     if (existing) {
       throw new OrganizationSlugAlreadyExistsError(slug);
     }
@@ -32,6 +30,7 @@ export class OrganizationService {
     return this.repository.create({
       name: input.name,
       slug,
+      ownerEmail: input.ownerEmail,
     });
   }
 
@@ -60,13 +59,11 @@ export class OrganizationService {
     input: UpdateOrganizationInput,
   ): Promise<Organization> {
     const organization = await this.repository.findById(id);
-
     if (!organization) {
       throw new OrganizationNotFoundError(id);
     }
 
     const slug = input.slug;
-
     if (slug && slug !== organization.slug) {
       const existing = await this.repository.findBySlug(slug);
 
@@ -78,6 +75,7 @@ export class OrganizationService {
     return this.repository.update(id, {
       name: input.name,
       slug,
+      ownerEmail: input.ownerEmail,
     });
   }
 

@@ -5,6 +5,7 @@ export interface Organization {
   name: string;
   slug: string;
   status: OrganizationStatus;
+  ownerEmail: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -12,11 +13,13 @@ export interface Organization {
 export interface CreateOrganizationInput {
   name: string;
   slug?: string;
+  ownerEmail: string;
 }
 
 export interface UpdateOrganizationInput {
   name?: string;
   slug?: string;
+  ownerEmail?: string;
 }
 
 export interface OrganizationRepository {

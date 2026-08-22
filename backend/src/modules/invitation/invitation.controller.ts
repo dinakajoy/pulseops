@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { InvitationService } from "./invitation.service";
-import { organizationIdSchema } from "../organizations/organization.schema";
+import { invitationIdSchema } from "./invitation.schema";
 
 export class InvitationController {
   constructor(private readonly service: InvitationService) {}
@@ -12,13 +12,12 @@ export class InvitationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const { organizationId, email, roleId } = req.body;
+      const { email, roleId, organizationId } = req.body;
 
       const result = await this.service.create({
-        organizationId,
         email,
         roleId,
-        // createdBy: req.user?.id ?? null,
+        organizationId,
       });
 
       res.status(201).json({
@@ -30,14 +29,12 @@ export class InvitationController {
   };
 
   getAll = async (
-    req: Request,
+    _req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const invitations = await this.service.getAll(
-        "req.params.organizationId",
-      );
+      const invitations = await this.service.getAll();
 
       res.status(200).json({
         data: invitations,
@@ -56,15 +53,12 @@ export class InvitationController {
       const invitationId = Array.isArray(req.params.id)
         ? req.params.id[0]
         : req.params.id || "";
-      const result = organizationIdSchema.safeParse(invitationId);
+      const result = invitationIdSchema.safeParse(invitationId);
       if (!result.success) {
         next(result.error);
         return;
       }
-      const invitation = await this.service.getById(
-        invitationId,
-        "req.params.organizationId",
-      );
+      const invitation = await this.service.getById(invitationId);
 
       res.status(200).json({
         data: invitation,
@@ -74,36 +68,14 @@ export class InvitationController {
     }
   };
 
-  getByToken = async (
+  update = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const invitation = await this.service.getByTokenHash(
-        Array.isArray(req.params.token)
-          ? req.params.token[0]
-          : req.params.token || "",
-        "req.params.organizationId",
-      );
-
-      res.status(200).json({
-        data: invitation,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
-
-  updateById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<void> => {
-    try {
-      const invitation = await this.service.updateById(
+      const invitation = await this.service.update(
         Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
-        "req.params.organizationId",
         req.body,
       );
 
@@ -115,19 +87,36 @@ export class InvitationController {
     }
   };
 
-  updateByToken = async (
+  resend = async (
     req: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const invitation = await this.service.updateByToken(
-        Array.isArray(req.params.token)
-          ? req.params.token[0]
-          : req.params.token || "",
-        "req.params.organizationId",
-        req.body,
-      );
+      const invitationId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id || "";
+      const invitation = await this.service.resend(invitationId);
+
+      res.status(200).json({
+        data: invitation,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  accept = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    try {
+      const token = Array.isArray(req.params.token)
+        ? req.params.token[0]
+        : req.params.token || "";
+
+      const invitation = await this.service.accept(token);
 
       res.status(200).json({
         data: invitation,
@@ -145,7 +134,6 @@ export class InvitationController {
     try {
       await this.service.delete(
         Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
-        req.body.organizationId,
       );
 
       res.status(204).send();

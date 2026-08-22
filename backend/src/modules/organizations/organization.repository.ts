@@ -12,6 +12,7 @@ type OrganizationRow = {
   name: string;
   slug: string;
   status: OrganizationStatus;
+  owner_email: string;
   created_at: Date;
   updated_at: Date;
 };
@@ -22,6 +23,7 @@ function mapOrganization(row: OrganizationRow): Organization {
     name: row.name,
     slug: row.slug,
     status: row.status,
+    ownerEmail: row.owner_email,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -35,18 +37,20 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
       `
       INSERT INTO organizations (
         name,
-        slug
+        slug,
+        owner_email
       )
-      VALUES ($1, $2)
+      VALUES ($1, $2, $3)
       RETURNING
         id,
         name,
         slug,
         status,
+        owner_email,
         created_at,
         updated_at
       `,
-      [input.name, input.slug],
+      [input.name, input.slug, input.ownerEmail],
     );
 
     return mapOrganization(result.rows[0]);
@@ -60,6 +64,7 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
         name,
         slug,
         status,
+        owner_email,
         created_at,
         updated_at
       FROM organizations
@@ -83,6 +88,7 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
         name,
         slug,
         status,
+        owner_email,
         created_at,
         updated_at
       FROM organizations
@@ -108,6 +114,7 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
       SET
         name = COALESCE($2, name),
         slug = COALESCE($3, slug),
+        owner_email = COALESCE($4, owner_email),
         updated_at = NOW()
       WHERE id = $1
       RETURNING
@@ -115,10 +122,11 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
         name,
         slug,
         status,
+        owner_email,
         created_at,
         updated_at
       `,
-      [id, input.name ?? null, input.slug ?? null],
+      [id, input.name ?? null, input.slug ?? null, input.ownerEmail ?? null],
     );
 
     return mapOrganization(result.rows[0]);
@@ -140,6 +148,7 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
         name,
         slug,
         status,
+        owner_email,
         created_at,
         updated_at
       `,

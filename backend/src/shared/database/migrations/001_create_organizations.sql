@@ -15,11 +15,14 @@ CREATE TABLE organizations (
 
     status organization_status NOT NULL DEFAULT 'active',
 
+    owner_email VARCHAR(255) NOT NULL,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-    CONSTRAINT organizations_slug_unique UNIQUE (slug)
+    CONSTRAINT organizations_slug_unique
+        UNIQUE (slug)
 );
 
 CREATE INDEX organizations_status_idx

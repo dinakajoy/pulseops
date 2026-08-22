@@ -12,7 +12,7 @@ import { PostgresInvitationRepository } from "./invitation.repository";
 import { InvitationService } from "./invitation.service";
 import { InvitationController } from "./invitation.controller";
 
-const organizationRouter = Router();
+const invitationRouter = Router();
 
 const repository = new PostgresInvitationRepository(pool);
 
@@ -20,30 +20,26 @@ const service = new InvitationService(repository);
 
 const controller = new InvitationController(service);
 
-organizationRouter.post(
+invitationRouter.post(
   "/invitations",
   validateBody(createInvitationSchema),
   controller.create,
 );
 
-organizationRouter.get("/invitations", controller.getAll);
+invitationRouter.get("/invitations", controller.getAll);
 
-organizationRouter.get("/invitations/:id", controller.getById);
+invitationRouter.get("/invitations/:id", controller.getById);
 
-organizationRouter.get("/invitations/token/:token", controller.getByToken);
-
-organizationRouter.patch(
+invitationRouter.patch(
   "/invitations/:id",
   validateBody(updateInvitationSchema),
-  controller.updateById,
+  controller.update,
 );
 
-organizationRouter.patch(
-  "/invitations/token/:token",
-  validateBody(updateInvitationSchema),
-  controller.updateByToken,
-);
+invitationRouter.post("/invitations/:id/resend", controller.resend);
 
-organizationRouter.delete("/invitations/:id", controller.delete);
+invitationRouter.post("/invitations/accept/:token", controller.accept);
 
-export default organizationRouter;
+invitationRouter.delete("/invitations/:id", controller.delete);
+
+export default invitationRouter;
