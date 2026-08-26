@@ -16,5 +16,10 @@ afterAll(async () => {
       organizations
     CASCADE
   `);
+  await pool.query(`
+    TRUNCATE TABLE
+      users
+    CASCADE
+  `);
   await pool.end();
 });
