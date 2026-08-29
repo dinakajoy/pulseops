@@ -30,9 +30,10 @@ export class InvitationService {
   }
 
   async create(input: CreateInvitationInput): Promise<Invitation> {
-    const existing = await this.repository.findPendingByOrganizationAndEmail(
+    const existing = await this.repository.findByOrganizationEmailStatus(
       input.organizationId,
       input.email,
+      "pending",
     );
 
     if (existing) {
@@ -130,10 +131,16 @@ export class InvitationService {
     return this.repository.resend(id, { tokenHash, expiresAt });
   }
 
-  async accept(token: string): Promise<Invitation | null> {
+  async accept(
+    organizationId: string,
+    token: string,
+  ): Promise<Invitation | null> {
     const tokenHash = this.hashToken(token);
 
-    const invitation = await this.repository.findByTokenHash(tokenHash);
+    const invitation = await this.repository.findByTokenHashAndOrganization(
+      organizationId,
+      tokenHash,
+    );
 
     if (!invitation) {
       throw new InvitationNotFoundError();
@@ -147,11 +154,17 @@ export class InvitationService {
       throw new InvitationRevokedError();
     }
 
-    if (new Date() > invitation.expiresAt) {
+    if (new Date() > invitation.expires_at) {
       throw new InvitationExpiredError();
     }
 
-    return this.repository.accept(invitation.id);
+    const acceptedInvitation = await this.repository.accept(invitation.id);
+
+    if (!acceptedInvitation) {
+      throw new InvitationAcceptedError();
+    }
+
+    return acceptedInvitation;
   }
 
   async delete(id: string): Promise<void> {

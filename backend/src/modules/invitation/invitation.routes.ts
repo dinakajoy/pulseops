@@ -38,7 +38,10 @@ invitationRouter.patch(
 
 invitationRouter.post("/invitations/:id/resend", controller.resend);
 
-invitationRouter.post("/invitations/accept/:token", controller.accept);
+invitationRouter.post(
+  "/organizations/:organizationId/invitations/accept/:token",
+  controller.accept,
+);
 
 invitationRouter.delete("/invitations/:id", controller.delete);
 

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { InvitationService } from "./invitation.service";
-import { invitationIdSchema } from "./invitation.schema";
+import { validatePostgresId } from "../../shared/utils";
 
 export class InvitationController {
   constructor(private readonly service: InvitationService) {}
@@ -12,6 +12,7 @@ export class InvitationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      // const { email, roleId } = req.body;
       const { email, roleId, organizationId } = req.body;
 
       const result = await this.service.create({
@@ -53,11 +54,12 @@ export class InvitationController {
       const invitationId = Array.isArray(req.params.id)
         ? req.params.id[0]
         : req.params.id || "";
-      const result = invitationIdSchema.safeParse(invitationId);
-      if (!result.success) {
-        next(result.error);
+      const validateId = validatePostgresId.safeParse(invitationId);
+      if (!validateId.success) {
+        next(validateId.error);
         return;
       }
+
       const invitation = await this.service.getById(invitationId);
 
       res.status(200).json({
@@ -74,10 +76,16 @@ export class InvitationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const invitation = await this.service.update(
-        Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
-        req.body,
-      );
+      const invitationId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id || "";
+      const validateId = validatePostgresId.safeParse(invitationId);
+      if (!validateId.success) {
+        next(validateId.error);
+        return;
+      }
+
+      const invitation = await this.service.update(invitationId, req.body);
 
       res.status(200).json({
         data: invitation,
@@ -96,6 +104,12 @@ export class InvitationController {
       const invitationId = Array.isArray(req.params.id)
         ? req.params.id[0]
         : req.params.id || "";
+      const validateId = validatePostgresId.safeParse(invitationId);
+      if (!validateId.success) {
+        next(validateId.error);
+        return;
+      }
+
       const invitation = await this.service.resend(invitationId);
 
       res.status(200).json({
@@ -112,11 +126,20 @@ export class InvitationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      const organizationId = Array.isArray(req.params.organizationId)
+        ? req.params.organizationId[0]
+        : req.params.organizationId || "";
+      const validateId = validatePostgresId.safeParse(organizationId);
+      if (!validateId.success) {
+        next(validateId.error);
+        return;
+      }
+
       const token = Array.isArray(req.params.token)
         ? req.params.token[0]
         : req.params.token || "";
 
-      const invitation = await this.service.accept(token);
+      const invitation = await this.service.accept(organizationId, token);
 
       res.status(200).json({
         data: invitation,
@@ -132,9 +155,15 @@ export class InvitationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      await this.service.delete(
-        Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
-      );
+      const invitationId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id || "";
+      const validateId = validatePostgresId.safeParse(invitationId);
+      if (!validateId.success) {
+        next(validateId.error);
+        return;
+      }
+      await this.service.delete(invitationId);
 
       res.status(204).send();
     } catch (error) {

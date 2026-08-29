@@ -150,10 +150,10 @@ describe("Invitation API", () => {
     });
   });
 
-  describe("POST /invitations/accept/:token", () => {
+  describe("POST /organizations/:organizationId/invitations/accept/:token", () => {
     it("accepts valid invitation", async () => {
       const createResponse = await request(app)
-        .post("/api/v1/invitations")
+        .post(`/api/v1/invitations`)
         .send({
           email: "accept@example.com",
           roleId,
@@ -161,7 +161,7 @@ describe("Invitation API", () => {
         });
 
       const response = await request(app).post(
-        `/api/v1/invitations/accept/${createResponse.body.data.token}`,
+        `/api/v1/organizations/${organizationId}/invitations/accept/${createResponse.body.data.token}`,
       );
 
       expect(response.status).toBe(200);
@@ -185,10 +185,12 @@ describe("Invitation API", () => {
 
       const token = createResponse.body.data.token;
 
-      await request(app).post(`/api/v1/invitations/accept/${token}`);
+      await request(app).post(
+        `/api/v1/organizations/${organizationId}/invitations/accept/${token}`,
+      );
 
       const response = await request(app).post(
-        `/api/v1/invitations/accept/${token}`,
+        `/api/v1/organizations/${organizationId}/invitations/accept/${token}`,
       );
 
       expect(response.status).toBe(409);
@@ -217,7 +219,7 @@ describe("Invitation API", () => {
       });
 
       const response = await request(app).post(
-        `/api/v1/invitations/accept/${token}`,
+        `/api/v1/organizations/${organizationId}/invitations/accept/${token}`,
       );
 
       expect(response.status).toBe(410);
@@ -251,7 +253,7 @@ describe("Invitation API", () => {
       );
 
       const response = await request(app).post(
-        `/api/v1/invitations/accept/${invitationToken}`,
+        `/api/v1/organizations/${organizationId}/invitations/accept/${invitationToken}`,
       );
 
       expect(response.status).toBe(410);

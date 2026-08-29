@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 
 import { OrganizationService } from "./organization.service";
-import { organizationIdSchema } from "./organization.schema";
+import { validatePostgresId } from "../../shared/utils";
 
 export class OrganizationController {
   constructor(private readonly service: OrganizationService) {}
@@ -31,9 +31,9 @@ export class OrganizationController {
       const organizationId = Array.isArray(req.params.id)
         ? req.params.id[0]
         : req.params.id || "";
-      const result = organizationIdSchema.safeParse(organizationId);
-      if (!result.success) {
-        next(result.error);
+      const validateId = validatePostgresId.safeParse(organizationId);
+      if (!validateId.success) {
+        next(validateId.error);
         return;
       }
       const organization = await this.service.getById(organizationId);
@@ -72,10 +72,16 @@ export class OrganizationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const organization = await this.service.update(
-        Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
-        req.body,
-      );
+      const organizationId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id || "";
+      const validateId = validatePostgresId.safeParse(organizationId);
+      if (!validateId.success) {
+        next(validateId.error);
+        return;
+      }
+
+      const organization = await this.service.update(organizationId, req.body);
 
       res.status(200).json({
         data: organization,
@@ -91,8 +97,17 @@ export class OrganizationController {
     next: NextFunction,
   ): Promise<void> => {
     try {
+      const organizationId = Array.isArray(req.params.id)
+        ? req.params.id[0]
+        : req.params.id || "";
+      const validateId = validatePostgresId.safeParse(organizationId);
+      if (!validateId.success) {
+        next(validateId.error);
+        return;
+      }
+
       const organization = await this.service.updateStatus(
-        Array.isArray(req.params.id) ? req.params.id[0] : req.params.id || "",
+        organizationId,
         req.body.status,
       );
 

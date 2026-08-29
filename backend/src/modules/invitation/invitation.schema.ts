@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createInvitationSchema = z.object({
-  organizationId: z.uuid("Invalid organization ID"),
+  organizationId: z.uuid("Invalid organization ID"), // To be removed after authentication
   email: z
     .string()
     .trim()
@@ -16,5 +16,3 @@ export const updateInvitationSchema = z.object({
 
   status: z.enum(["pending", "accepted", "revoked"]).optional(),
 });
-
-export const invitationIdSchema = z.uuid();

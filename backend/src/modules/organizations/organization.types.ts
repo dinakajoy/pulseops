@@ -32,6 +32,4 @@ export interface OrganizationRepository {
   update(id: string, input: UpdateOrganizationInput): Promise<Organization>;
 
   updateStatus(id: string, status: OrganizationStatus): Promise<Organization>;
-
-  delete(id: string): Promise<void>;
 }
