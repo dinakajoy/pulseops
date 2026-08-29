@@ -10,14 +10,15 @@ export interface User {
   updatedAt: Date;
 }
 
-export interface CreateUserInput {
+export interface RegisterUserInput {
+  organizationId: string;
   name: string;
   email: string;
   password: string;
 }
 
-export interface UserRepository {
-  create(input: CreateUserInput): Promise<User>;
+export interface AuthRepository {
+  create(input: RegisterUserInput): Promise<User>;
 
   findByEmail(email: string): Promise<User | null>;
 }

@@ -16,6 +16,8 @@ CREATE TABLE users (
 
     status user_status NOT NULL DEFAULT 'active',
 
+    email_verified_at TIMESTAMPTZ NULL,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

@@ -37,6 +37,7 @@
     "vitest": "^4.1.10"
   },
   "dependencies": {
+    "argon2": "^0.45.1",
     "compression": "^1.8.1",
     "cors": "^2.8.6",
     "dotenv-safe": "^9.1.0",

@@ -1,10 +1,10 @@
 import { Pool } from "pg";
 import {
-  CreateUserInput,
+  RegisterUserInput,
   User,
-  UserRepository,
+  AuthRepository,
   UserStatus,
-} from "./users.types";
+} from "./auth.types";
 
 type UserRow = {
   id: string;
@@ -28,10 +28,10 @@ function mapUser(row: UserRow): User {
   };
 }
 
-export class PostgresUserRepository implements UserRepository {
+export class PostgresAuthRepository implements AuthRepository {
   constructor(private readonly db: Pool) {}
 
-  async create(input: CreateUserInput): Promise<User> {
+  async create(input: RegisterUserInput): Promise<User> {
     const result = await this.db.query(
       `
       INSERT INTO users (

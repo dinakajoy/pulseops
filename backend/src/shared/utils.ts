@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 export function generateSlug(value: string): string {
   return value
     .toLowerCase()
@@ -7,3 +9,5 @@ export function generateSlug(value: string): string {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 }
+
+export const validatePostgresId = z.uuid();

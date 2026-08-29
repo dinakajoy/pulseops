@@ -2,6 +2,7 @@ import { Pool } from "pg";
 import {
   CreateInvitationInput,
   Invitation,
+  Invite,
   InvitationRepository,
   InvitationStatus,
   ResendInvitationInput,
@@ -64,11 +65,12 @@ export class PostgresInvitationRepository implements InvitationRepository {
 
     return mapInvitation(result.rows[0]);
   }
-  // TODO: Ensure all finds, update and delete uses organization id as part of the WHERE clause
+  // TODO: Ensure all finds, update and delete uses organization_id as part of the WHERE clause
 
-  async findPendingByOrganizationAndEmail(
+  async findByOrganizationEmailStatus(
     organizationId: string,
     email: string,
+    status: string,
   ): Promise<Invitation | null> {
     const result = await this.db.query(
       `
@@ -80,16 +82,19 @@ export class PostgresInvitationRepository implements InvitationRepository {
     FROM invitations
     WHERE organization_id = $1
       AND email = $2
-      AND status = 'pending'
+      AND status = $3
     LIMIT 1
     `,
-      [organizationId, email],
+      [organizationId, email, status],
     );
 
     return result.rows[0] ? mapInvitation(result.rows[0]) : null;
   }
 
-  async findByTokenHash(tokenHash: string): Promise<Invitation | null> {
+  async findByTokenHashAndOrganization(
+    organizationId: string,
+    tokenHash: string,
+  ): Promise<Invite | null> {
     const result = await this.db.query(
       `
     SELECT
@@ -105,16 +110,17 @@ export class PostgresInvitationRepository implements InvitationRepository {
       updated_at
     FROM invitations
     WHERE token_hash = $1
+      AND organization_id = $2
     LIMIT 1
     `,
-      [tokenHash],
+      [tokenHash, organizationId],
     );
 
     if (result.rows.length === 0) {
       return null;
     }
 
-    return mapInvitation(result.rows[0]);
+    return result.rows[0];
   }
 
   async findAll(): Promise<Invitation[]> {
@@ -161,6 +167,34 @@ export class PostgresInvitationRepository implements InvitationRepository {
     return mapInvitation(result.rows[0]);
   }
 
+  async findByIdAndEmail(
+    id: string,
+    email: string,
+  ): Promise<Invitation | null> {
+    const result = await this.db.query(
+      `
+      SELECT
+        id,
+        email,
+        role_id,
+        status,
+        expires_at,
+        accepted_at,
+        created_at
+      FROM invitations
+      WHERE email = $1
+        AND id = $2
+      `,
+      [email, id],
+    );
+
+    if (result.rows.length === 0) {
+      return null;
+    }
+
+    return mapInvitation(result.rows[0]);
+  }
+
   async update(id: string, input: UpdateInvitationInput): Promise<Invitation> {
     const result = await this.db.query(
       `
@@ -192,7 +226,7 @@ export class PostgresInvitationRepository implements InvitationRepository {
       SET
         token_hash = $3,
         expires_at = $4,
-        status = "pending",
+        status = 'pending',
         updated_at = NOW()
       WHERE id = $1 AND organization_id = $2
       RETURNING

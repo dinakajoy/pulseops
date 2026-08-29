@@ -11,6 +11,11 @@ export interface Invitation {
   token?: string;
 }
 
+export interface Invite extends Invitation {
+  organization_id: string;
+  expires_at: Date;
+}
+
 export interface CreateInvitationInput {
   organizationId: string;
   email: string;
@@ -37,14 +42,15 @@ export interface InvitationRepository {
 
   findById(id: string): Promise<Invitation | null>;
 
-  findByTokenHash(
+  findByTokenHashAndOrganization(
+    organizationId: string,
     tokenHash: string,
-    // organizationId: string,
-  ): Promise<Invitation | null>;
+  ): Promise<Invite | null>;
 
-  findPendingByOrganizationAndEmail(
+  findByOrganizationEmailStatus(
     organizationId: string,
     email: string,
+    status: string,
   ): Promise<Invitation | null>;
 
   update(

@@ -157,14 +157,4 @@ export class PostgresOrganizationRepository implements OrganizationRepository {
 
     return mapOrganization(result.rows[0]);
   }
-
-  async delete(id: string): Promise<void> {
-    await this.db.query(
-      `
-      DELETE FROM organizations
-      WHERE id = $1
-      `,
-      [id],
-    );
-  }
 }

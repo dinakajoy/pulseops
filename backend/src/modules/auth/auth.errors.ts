@@ -5,3 +5,13 @@ export class EmailAlreadyExistsError extends AppError {
     super(409, "EMAIL_ALREADY_EXISTS", `Email "${email}" already exists`);
   }
 }
+
+export class UninvitedUserError extends AppError {
+  constructor() {
+    super(
+      400,
+      "UNINVITED_USER",
+      "You were not invited to join this organization",
+    );
+  }
+}
